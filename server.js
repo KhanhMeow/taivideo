@@ -23,23 +23,31 @@ function extractId(url) {
 app.post("/api/download", async (req, res) => {
     try {
         const { url } = req.body;
-
         if (!url) return res.status(400).json({ error: "Thiếu URL!" });
 
+        // Lấy ID
         const id = extractId(url);
         if (!id) return res.status(400).json({ error: "Không lấy được ID từ link!" });
 
-        const apiUrl = `https://xhsapi.sxsapi.workers.dev/video?id=${id}`;
-        const response = await axios.get(apiUrl);
+        // API bypass (ổn định nhất hiện tại)
+        const apiUrl = `https://xhslink.sxsapi.site/api/video/xhs?id=${id}`;
+
+        const response = await axios.get(apiUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0"
+            }
+        });
 
         if (!response.data || !response.data.data) {
             return res.status(500).json({ error: "Không lấy được dữ liệu video!" });
         }
 
+        const info = response.data.data;
+
         res.json({
-            video_url: response.data.data.video_url,
-            cover: response.data.data.cover,
-            desc: response.data.data.desc
+            video_url: info.video,
+            cover: info.cover,
+            desc: info.title
         });
 
     } catch (err) {
@@ -47,6 +55,7 @@ app.post("/api/download", async (req, res) => {
         res.status(500).json({ error: "Lỗi server!" });
     }
 });
+
 
 app.listen(3000, () => {
     console.log("🚀 Server chạy tại: http://localhost:3000");
