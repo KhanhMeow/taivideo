@@ -1,48 +1,31 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Xiaohongshu Downloader (educational)</title>
-  <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;max-width:820px;margin:40px auto;padding:0 20px}
-    input,button{font-size:16px;padding:10px}
-    .row{display:flex;gap:8px}
-    textarea{width:100%;height:80px}
-    .note{color:#666;font-size:14px}
-  </style>
+    <meta charset="UTF-8">
+    <title>Tải video Xiaohongshu</title>
 </head>
 <body>
-  <h1>Xiaohongshu (Rednote) Downloader — Educational</h1>
-  <p class="note">Chú ý: chỉ download nội dung bạn sở hữu hoặc có quyền. Không dùng để vi phạm bản quyền hoặc gỡ watermark.</p>
+    <h2>Tải Video Xiaohongshu</h2>
 
-  <div>
-    <label for="url">Dán link Xiaohongshu / Rednote ở đây:</label>
-    <div class="row" style="margin-top:8px">
-      <input id="url" placeholder="https://www.xiaohongshu.com/..." style="flex:1" />
-      <button id="download">Tải xuống</button>
-    </div>
-  </div>
+    <input id="url" type="text" placeholder="Dán link Xiaohongshu vào đây" style="width: 300px;">
+    <button onclick="download()">Tải ngay</button>
 
-  <script>
-    document.getElementById('download').addEventListener('click', async () => {
-      const url = document.getElementById('url').value.trim();
-      if (!url) return alert('Hãy dán link trước.');
+    <pre id="result"></pre>
 
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = '/api/download';
-      form.style.display = 'none';
+    <script>
+        async function download() {
+            const url = document.getElementById("url").value.trim();
+            if (!url) return alert("Vui lòng nhập URL!");
 
-      const input = document.createElement('input');
-      input.name = 'url';
-      input.value = url;
-      form.appendChild(input);
+            const res = await fetch("/api/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url })
+            });
 
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(()=>form.remove(), 1000);
-    });
-  </script>
+            const data = await res.json();
+            document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
 </body>
 </html>
