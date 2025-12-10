@@ -1,10 +1,16 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Giao diện chính (GET /)
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // API tải video Xiaohongshu
 app.post("/api/download", async (req, res) => {
@@ -15,9 +21,7 @@ app.post("/api/download", async (req, res) => {
             return res.status(400).json({ error: "Thiếu URL!" });
         }
 
-        // API công cộng giúp lấy link video Xiaohongshu
         const apiUrl = `https://api.igeek.workers.dev/xhs/video?url=${encodeURIComponent(url)}`;
-
         const response = await axios.get(apiUrl);
 
         if (!response.data || !response.data.data) {
